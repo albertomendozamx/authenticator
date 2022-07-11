@@ -133,3 +133,24 @@ describe('Login', () => {
   })
 
 })
+
+describe('Verify JWT', () => {
+
+  test('Request with jwt on header should return a 200 status code', async () => {
+    const response = await request(app).get('/verify')
+      .set({ Authorization: 'the.powerfull.token.is.here' })
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('Request without jwt should return a 400 status code', async () => {
+    const response = await request(app).get('/verify')
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('Request with wrong jwt on header should return a 401 status code', async () => {
+    const response = await request(app).get('/verify')
+      .set({ Authorization: 'the.magical.token.is.here' })
+    expect(response.statusCode).toBe(401)
+  })
+
+})

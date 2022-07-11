@@ -5,12 +5,6 @@ const app = express()
 
 app.use(express.json())
 
-app.use((req, res, next) => {
-    res.status(404)
-    if (req.accepts('json'))
-        return res.json({ status: false, error: "It isn't here!" })
-})
-
 app.get('/', async (req, res) => {
     return res.status(200).send("Some view...")
 })
@@ -59,8 +53,13 @@ app.delete('/delete-my-account', (req, res) => {
         return res.status(401).send({ status: false })
 })
 
-// app.get('/verify', (req, res) => {
-//     res.status(401).send("Some view...")
-// })
+app.get('/verify', (req, res) => {
+    const jwt = req.headers.authorization || false
+    if (!jwt) return res.status(400).send({ status: false })
+    else if (jwt == 'the.powerfull.token.is.here')
+        return res.status(200).send({ status: true })
+    else
+        return res.status(401).send({ status: false })
+})
 
 export default app
