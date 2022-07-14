@@ -1,5 +1,4 @@
 import express from 'express'
-import { v4 } from 'uuid'
 import Users from '../models/Users.js'
 
 const app = express()
@@ -14,11 +13,10 @@ app.post('/sign-up', async (req, res) => {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
         return res.status(400).send({ status: false })
-    let uuid = v4()
     let newUser = await Users.create({
-        uuid, name, email, phone, password, salt: uuid, password, nip: '1234'
+        name, email, phone, password, salt: 'SaltString', password, nip: '1234'
     })
-    return res.status(201).send({ status: true, uuid })
+    return res.status(201).send({ status: true })
 })
 
 app.post('/update-account', (req, res) => {

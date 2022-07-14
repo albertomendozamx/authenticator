@@ -1,4 +1,9 @@
 import app from "./api/controllers/users.js"
+import { db } from "./config/db.js"
 
-app.listen(3000)
-console.log('🚀 ignition...')
+async function main() {
+    await db.sync({ force: true })
+    app.listen(3000)
+    console.log('🚀 ignition...')
+}
+main()

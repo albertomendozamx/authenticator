@@ -1,36 +1,23 @@
-import { Sequelize, Model, DataTypes } from "sequelize"
-import utcToZonedTime from 'date-fns-tz'
-import format from 'date-fns'
+import { Sequelize, DataTypes } from "sequelize"
+import { db } from "../../config/db.js"
 
-const sequelize = new Sequelize('postgres://docker:docker@localhost:5432/apps')
-
-const User = sequelize.define('access', {
-  id: {
-    primaryKey: true,
-    autoIncrement: true,
-    type: DataTypes.INTEGER
-  },
-  uuid: { type: DataTypes.STRING },
-  name: { type: DataTypes.STRING },
+const User = db.define('access', {
+  uuid: { primaryKey: true, type: DataTypes.UUID, defaultValue: Sequelize.UUIDV4, unique: true },
+  name: { type: DataTypes.STRING, allowNull: false },
   lastname: { type: DataTypes.STRING },
   birthday: { type: DataTypes.DATE },
-  email: { type: DataTypes.STRING },
-  phone: { type: DataTypes.STRING },
-  salt: { type: DataTypes.STRING },
-  password: { type: DataTypes.STRING },
-  nip: { type: DataTypes.STRING },
-  active: DataTypes.BOOLEAN,
-  verified: DataTypes.BOOLEAN,
+  email: { type: DataTypes.STRING, allowNull: false },
+  phone: { type: DataTypes.STRING, allowNull: false },
+  salt: { type: DataTypes.STRING, allowNull: false },
+  password: { type: DataTypes.STRING, allowNull: false },
+  nip: { type: DataTypes.STRING, allowNull: false },
+  active: { type: DataTypes.BOOLEAN, defaultValue: false },
+  verified: { type: DataTypes.BOOLEAN, defaultValue: false },
   verifiedtoken: { type: DataTypes.STRING },
-  createdAt: {
-    type: 'TIMESTAMP WITHOUT TIME ZONE',
-    get() { return format(utcToZonedTime(this.getDataValue('createdAt'), 'America/Mexico_city'), 'dd.MM.yyyy HH:mm') }
-  },
-  updtedAt: { type: DataTypes.DATE },
-
+  createdAt: { type: 'TIMESTAMP WITHOUT TIME ZONE' },
+  updatedAt: { type: 'TIMESTAMP WITHOUT TIME ZONE' },
 }, {
   freezeTableName: true,
 })
 
-await sequelize.sync({ alter: true })
 export default User
