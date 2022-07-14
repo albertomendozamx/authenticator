@@ -1,7 +1,8 @@
 import { Sequelize, DataTypes } from "sequelize"
 import { db } from "../../config/db.js"
+import { Apps } from "./Accounts_apps.js"
 
-const User = db.define('access', {
+export const Accounts = db.define('accounts', {
   uuid: { primaryKey: true, type: DataTypes.UUID, defaultValue: Sequelize.UUIDV4, unique: true },
   name: { type: DataTypes.STRING, allowNull: false },
   lastname: { type: DataTypes.STRING },
@@ -20,4 +21,8 @@ const User = db.define('access', {
   freezeTableName: true,
 })
 
-export default User
+Accounts.hasMany(Apps, {
+  foreignKey: 'user',
+  sourceKey: 'uuid'
+})
+Apps.belongsTo(Accounts, { foreignKey: 'user', targetId: 'uuid' })

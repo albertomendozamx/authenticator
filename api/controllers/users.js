@@ -1,5 +1,5 @@
 import express from 'express'
-import Users from '../models/Users.js'
+import { Accounts } from '../models/Accounts.js'
 
 const app = express()
 
@@ -13,9 +13,10 @@ app.post('/sign-up', async (req, res) => {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
         return res.status(400).send({ status: false })
-    let newUser = await Users.create({
+    let newAccount = await Accounts.create({
         name, email, phone, password, salt: 'SaltString', password, nip: '1234'
     })
+    console.log('account', newAccount)
     return res.status(201).send({ status: true })
 })
 
