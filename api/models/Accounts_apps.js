@@ -10,5 +10,3 @@ export const Apps = db.define('accounts_apps', {
 }, {
     freezeTableName: true,
 })
-
-// export default Apps
