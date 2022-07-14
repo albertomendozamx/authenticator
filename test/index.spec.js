@@ -1,4 +1,4 @@
-import app from '../src/service.js'
+import app from '../api/controllers/users.js'
 import request from 'supertest'
 
 describe('Home', () => {
