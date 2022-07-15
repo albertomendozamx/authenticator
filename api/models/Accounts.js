@@ -4,11 +4,11 @@ import { Apps } from "./Accounts_apps.js"
 
 export const Accounts = db.define('accounts', {
   uuid: { primaryKey: true, type: DataTypes.UUID, defaultValue: Sequelize.UUIDV4, unique: true },
-  name: { type: DataTypes.STRING, allowNull: false },
+  name: { type: DataTypes.STRING, allowNull: false, uniquer: true },
   lastname: { type: DataTypes.STRING },
   birthday: { type: DataTypes.DATE },
-  email: { type: DataTypes.TEXT, allowNull: false },
-  phone: { type: DataTypes.TEXT, allowNull: false },
+  email: { type: DataTypes.TEXT, allowNull: false, unique: true },
+  phone: { type: DataTypes.TEXT, allowNull: false, unique: true },
   salt: { type: DataTypes.STRING, allowNull: false },
   password: { type: DataTypes.TEXT, allowNull: false },
   nip: { type: DataTypes.TEXT, allowNull: false },
