@@ -1,5 +1,6 @@
 import express from 'express'
 import { Accounts } from '../models/Accounts.js'
+// import { Apps } from '../models/Accounts_apps.js'
 import crypto from 'crypto'
 
 const app = express()
@@ -13,14 +14,20 @@ app.get('/', async (req, res) => {
 app.post('/sign-up', async (req, res) => {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
-        return res.status(400).send({ status: false })
+        return res.status(400).send({ status: false, error: fieldsRequired })
     let salt = crypto.randomBytes(20).toString('hex')
     let verifiedtoken = crypto.randomBytes(50).toString('hex')
-    let newAccount = await Accounts.create({
-        name, email, phone, password, salt, nip: '1234', verifiedtoken
-    })
-    console.log('newAccount', newAccount)
-    console.log
+    let newAccount
+    try {
+        newAccount = await Accounts.create({
+            name, email, phone, password, salt, nip: '1234', verifiedtoken
+        })
+    } catch (error) {
+        console.log('💥 error', error.errors)
+        return res.status(400).send({ status: false, error: error.name })
+    }
+    let user = newAccount.accounts.dataValues.uuid
+    console.log('🔥 newAccount', user)
     return res.status(201).send({ status: true })
 })
 
