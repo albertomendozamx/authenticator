@@ -25,6 +25,18 @@ describe('Account', () => {
       expect(response.statusCode).toBe(201)
     })
 
+    test('Register user with same data should respond with a 400 status code', async () => {
+      const response = await request(app).post('/sign-up')
+        .send({
+          name: 'Alberto',
+          email: 'alberto.mendoza@sspo.gob.mx',
+          phone: '9511967667',
+          app: '911',
+          password: 'OnePasswordForExample'
+        })
+      expect(response.statusCode).toBe(400)
+    })
+
     test('Register user should respond with a 400 status code', async () => {
       const response = await request(app).post('/sign-up')
         .send({
@@ -34,6 +46,55 @@ describe('Account', () => {
         })
       expect(response.statusCode).toBe(400)
     })
+
+    describe('App association', () => {
+
+      test('Association without account should respond with a 400 status code', async () => {
+        const response = await request(app).put('/sign-up')
+          .send({
+            email: 'algunotrocorreonoexistente@local.host',
+            phone: '9511967667',
+            app: '089'
+          })
+        expect(response.statusCode).toBe(400)
+      })
+
+      test('Association with account should respond with a 201 status code', async () => {
+        const response = await request(app).put('/sign-up')
+          .send({
+            email: 'alberto.mendoza@sspo.gob.mx',
+            phone: '9511967667',
+            app: '089'
+          })
+        expect(response.statusCode).toBe(201)
+      })
+
+      test('Association with same account should respond with a 400 status code', async () => {
+        const response = await request(app).put('/sign-up')
+          .send({
+            email: 'alberto.mendoza@sspo.gob.mx',
+            phone: '9511967667',
+            app: '089'
+          })
+        expect(response.statusCode).toBe(400)
+      })
+
+      test('Association without email should respond with a 400 status code', async () => {
+        const response = await request(app).put('/sign-up')
+          .send({
+            phone: '9511967667',
+            app: '089'
+          })
+        expect(response.statusCode).toBe(400)
+      })
+
+      test('Association without data should respond with a 400 status code', async () => {
+        const response = await request(app).put('/sign-up')
+        expect(response.statusCode).toBe(400)
+      })
+
+    })
+
   })
 
   describe('Update', () => {

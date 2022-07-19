@@ -1,6 +1,6 @@
 import express from 'express'
 import { Accounts } from '../models/Accounts.js'
-// import { Apps } from '../models/Accounts_apps.js'
+import { Apps } from '../models/Accounts_apps.js'
 import crypto from 'crypto'
 
 const app = express()
@@ -14,20 +14,46 @@ app.get('/', async (req, res) => {
 app.post('/sign-up', async (req, res) => {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
-        return res.status(400).send({ status: false, error: fieldsRequired })
+        return res.status(400).send({ status: false, error: 'fieldsRequired' })
     let salt = crypto.randomBytes(20).toString('hex')
     let verifiedtoken = crypto.randomBytes(50).toString('hex')
-    let newAccount
+    var newAccount
+    var newApp
     try {
         newAccount = await Accounts.create({
-            name, email, phone, password, salt, nip: '1234', verifiedtoken
+            name,
+            email,
+            phone,
+            password,
+            salt,
+            nip: '1234',
+            verifiedtoken
         })
+        newAccount = newAccount.toJSON()
+        newApp = await Apps.create({ user: newAccount.uuid, app })
     } catch (error) {
-        console.log('💥 error', error.errors)
+        // console.log('💥 error', error)
         return res.status(400).send({ status: false, error: error.name })
     }
-    let user = newAccount.accounts.dataValues.uuid
-    console.log('🔥 newAccount', user)
+    return res.status(201).send({ status: true })
+})
+
+app.put('/sign-up', async (req, res) => {
+    const { email, phone, app } = req.body
+    if (!email || !phone || !app)
+        return res.status(400).send({ status: false, error: 'fieldsRequired' })
+    var foundAccount
+    var foundApp
+    var associated
+    try {
+        foundAccount = await Accounts.findOne({ where: { email, phone } })
+        foundAccount = foundAccount.toJSON()
+        foundApp = await Apps.findOne({ where: { user: foundAccount.uuid, app } })
+        console.log('🔥 foundApp', foundApp)
+        if (foundApp.toJSON()) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
+    } catch (error) {
+        return res.status(400).send({ status: false, error: error.name })
+    }
     return res.status(201).send({ status: true })
 })
 
