@@ -132,16 +132,25 @@ describe('Account', () => {
 
   describe('Validation', () => {
     test('Validate account should respond with a 200 status code', async () => {
-      const response = await request(app).get('/validate')
+      const user = await request(app).post('/sign-up')
         .send({
-          code: 'a-string-wit-valid-code-for-activation'
+          name: 'Alberto',
+          email: 'alberto@mendoza.dev',
+          phone: '9511967667',
+          app: 'Intranet',
+          password: 'OnePasswordForExample'
+        })
+      const verifiedToken = user._body.data.verifiedtoken
+      const response = await request(app).get('/validate')
+        .query({
+          code: verifiedToken
         })
       expect(response.statusCode).toBe(200)
     })
 
     test('Validate account with another code should respond with a 400 status code', async () => {
       const response = await request(app).get('/validate')
-        .send({
+        .query({
           code: 'a-string-wit-valid-code-for-activation2'
         })
       expect(response.statusCode).toBe(400)

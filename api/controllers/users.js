@@ -34,7 +34,7 @@ app.post('/sign-up', async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-    return res.status(201).send({ status: true })
+    return res.status(201).send({ status: true, data: newAccount })
 })
 
 app.put('/sign-up', async (req, res) => {
@@ -51,7 +51,6 @@ app.put('/sign-up', async (req, res) => {
         if (foundApp) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
         associated = await Apps.create({ user: foundAccount.uuid, app })
     } catch (error) {
-        console.log('🔥 error', error)
         return res.status(400).send({ status: false, error: error.name })
     }
     return res.status(201).send({ status: true })
@@ -75,13 +74,19 @@ app.post('/log-in', (req, res) => {
         return res.status(401).send({ status: false })
 })
 
-app.get('/validate', (req, res) => {
-    const { code } = req.body
-    if (!code) return res.status(400).send("Some view")
-    else if (code == 'a-string-wit-valid-code-for-activation')
-        return res.status(200).send("Some view...")
-    else
-        return res.status(400).send("Some view...")
+app.get('/validate', async (req, res) => {
+    if (!req.query.code) return res.status(400).send("Some view")
+    var activatedUser
+    try {
+        activatedUser = await Accounts.update(
+            { active: true, verifiedtoken: '' },
+            { where: { verifiedtoken: req.query.code } }
+        )
+        if (!activatedUser[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
+        return res.status(200).send({ status: true, message: 'Validated' })
+    } catch (error) {
+        return res.status(400).send({ status: false, error: error.name })
+    }
 })
 
 app.delete('/delete-my-account', (req, res) => {
