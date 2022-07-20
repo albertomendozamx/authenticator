@@ -32,7 +32,6 @@ app.post('/sign-up', async (req, res) => {
         newAccount = newAccount.toJSON()
         newApp = await Apps.create({ user: newAccount.uuid, app })
     } catch (error) {
-        // console.log('💥 error', error)
         return res.status(400).send({ status: false, error: error.name })
     }
     return res.status(201).send({ status: true })
@@ -47,11 +46,13 @@ app.put('/sign-up', async (req, res) => {
     var associated
     try {
         foundAccount = await Accounts.findOne({ where: { email, phone } })
-        foundAccount = foundAccount.toJSON()
+        console.log('🔥 foundAccount', foundAccount)
+        if (foundAccount) return res.status(400).send({ status: false, error: 'accountNotFound' })
         foundApp = await Apps.findOne({ where: { user: foundAccount.uuid, app } })
-        console.log('🔥 foundApp', foundApp)
-        if (foundApp.toJSON()) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
+        if (foundApp) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
+        associated = await Apps.create({ user: foundAccount.uuid, app })
     } catch (error) {
+        console.log('🔥 error', error)
         return res.status(400).send({ status: false, error: error.name })
     }
     return res.status(201).send({ status: true })

@@ -6,6 +6,7 @@ export const db = new Sequelize(
     "docker",
     {
         host: "localhost",
-        dialect: "postgres"
+        dialect: "postgres",
+        logging: false
     }
 )
