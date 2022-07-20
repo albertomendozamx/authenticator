@@ -1,5 +1,10 @@
 import app from '../api/controllers/users.js'
 import request from 'supertest'
+import { db } from '../config/db.js'
+
+beforeAll(async () => {
+  await db.sync({ force: true })
+})
 
 describe('Home', () => {
 

@@ -20,6 +20,7 @@
     "sequelize": "^6.21.3"
   },
   "devDependencies": {
+    "dotenv": "^16.0.1",
     "jest": "^28.1.2",
     "supertest": "^6.2.4"
   }
