@@ -46,8 +46,7 @@ app.put('/sign-up', async (req, res) => {
     var associated
     try {
         foundAccount = await Accounts.findOne({ where: { email, phone } })
-        console.log('🔥 foundAccount', foundAccount)
-        if (foundAccount) return res.status(400).send({ status: false, error: 'accountNotFound' })
+        if (foundAccount == null) return res.status(400).send({ status: false, error: 'accountNotFound' })
         foundApp = await Apps.findOne({ where: { user: foundAccount.uuid, app } })
         if (foundApp) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
         associated = await Apps.create({ user: foundAccount.uuid, app })
