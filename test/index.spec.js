@@ -90,8 +90,8 @@ describe('Account', () => {
       const response = await request(app).put('/sign-up')
         .send({
           app: '089',
-          email: 'alberto.mendoza@sspo.gob.mx',
-          phone: '9511967667',
+          email: 'alberto.sandoval@sspo.gob.mx',
+          phone: '9511231231',
         })
       expect(response.statusCode).toBe(201)
     })
