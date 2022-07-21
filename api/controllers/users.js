@@ -2,6 +2,7 @@ import express from 'express'
 import { Accounts } from '../models/Accounts.js'
 import { Apps } from '../models/Accounts_apps.js'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 const app = express()
 
@@ -15,8 +16,9 @@ app.post('/sign-up', async (req, res) => {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
         return res.status(400).send({ status: false, error: 'fieldsRequired' })
-    let salt = crypto.randomBytes(20).toString('hex')
-    let verifiedtoken = crypto.randomBytes(50).toString('hex')
+    let salt = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(password, salt)
+    let verifiedtoken = crypto.randomBytes(25).toString('hex')
     var newAccount
     var newApp
     try {
@@ -24,7 +26,7 @@ app.post('/sign-up', async (req, res) => {
             name,
             email,
             phone,
-            password,
+            password: hashPassword,
             salt,
             nip: '1234',
             verifiedtoken
