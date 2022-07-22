@@ -81,8 +81,8 @@ app.get('/validate', async (req, res) => {
     var activatedUser
     try {
         activatedUser = await Accounts.update(
-            { active: true, verifiedtoken: '' },
-            { where: { verifiedtoken: req.query.code } }
+            { active: true, verified: true, verifiedtoken: '' },
+            { where: { verifiedtoken: req.query.code, active: false, verified: false } }
         )
         if (!activatedUser[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
         return res.status(200).send({ status: true, message: 'Validated' })
