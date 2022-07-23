@@ -8,8 +8,7 @@ passport.deserializeUser((user, done) => done(null, user))
 
 passport.use(new PassportLocal.Strategy({
     usernameField: 'phone',
-    passwordField: 'password',
-    session: false
+    passwordField: 'password'
 }, async (phone, password, done) => {
     try {
         let userFound = await Accounts.findOne({ where: { phone, active: true, verified: true } })

@@ -1,6 +1,7 @@
 import express from 'express'
 import { Accounts } from '../models/Accounts.js'
 import { Apps } from '../models/Accounts_apps.js'
+import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
 import passport from 'passport'
@@ -69,8 +70,18 @@ app.post('/update-account', (req, res) => {
     else return res.status(200).send({ status: true, message: 'Updated successfully' })
 })
 
-app.post('/log-in', passport.authenticate('local'), (req, res) => {
-    console.log('I´m inside!')
+app.post('/log-in', passport.authenticate('local', { session: false }), (req, res) => {
+    try {
+        let validity = 'aDate'
+        let token = jwt.sign(
+            { user: req.user.uuid, validity },
+            'theSecretIsHere',
+            { expiresIn: '1h' }
+        )
+        console.log('🔑 token', token)
+    } catch (error) {
+        console.log('💥 error', error)
+    }
     // const { phone, password } = req.body
     // if (!phone || !password)
     //     return res.status(400).send({ status: false })
