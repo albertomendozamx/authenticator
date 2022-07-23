@@ -3,9 +3,12 @@ import { Accounts } from '../models/Accounts.js'
 import { Apps } from '../models/Accounts_apps.js'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
+import passport from 'passport'
+import '../../config/strategies/local.strategy.js'
 
 const app = express()
 
+app.use(passport.initialize())
 app.use(express.json())
 
 app.get('/', async (req, res) => {
@@ -66,14 +69,16 @@ app.post('/update-account', (req, res) => {
     else return res.status(200).send({ status: true, message: 'Updated successfully' })
 })
 
-app.post('/log-in', (req, res) => {
-    const { phone, password } = req.body
-    if (!phone || !password)
-        return res.status(400).send({ status: false })
-    else if (phone == '9511967667' && password == 'OnePasswordForExample')
-        return res.status(200).send({ status: true, jwt: { validity: '', token: 'The.powerfull.token.is.here' } })
-    else
-        return res.status(401).send({ status: false })
+app.post('/log-in', passport.authenticate('local'), (req, res) => {
+    console.log('I´m inside!')
+    // const { phone, password } = req.body
+    // if (!phone || !password)
+    //     return res.status(400).send({ status: false })
+    // else if (phone == '9511967667' && password == 'OnePasswordForExample')
+    //     return res.status(200).send({ status: true, jwt: { validity: '', token: 'The.powerfull.token.is.here' } })
+    // else
+    //     return res.status(401).send({ status: false })
+
 })
 
 app.get('/validate', async (req, res) => {
