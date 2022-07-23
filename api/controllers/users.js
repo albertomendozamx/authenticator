@@ -74,13 +74,14 @@ app.post('/log-in', passport.authenticate('local', { session: false }), (req, re
     try {
         let validity = 'aDate'
         let token = jwt.sign(
-            { user: req.user.uuid, validity },
+            { user: req.user.uuid },
             'theSecretIsHere',
             { expiresIn: '1h' }
         )
-        console.log('🔑 token', token)
+        return res.status(200).send({ status: true, token, message: 'You are inside!' })
     } catch (error) {
         console.log('💥 error', error)
+        return res.status(401).send({ status: false, message: 'Wrong data' })
     }
     // const { phone, password } = req.body
     // if (!phone || !password)
