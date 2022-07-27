@@ -72,7 +72,6 @@ app.post('/update-account', (req, res) => {
 
 app.post('/log-in', passport.authenticate('local', { session: false }), (req, res) => {
     try {
-        let validity = 'aDate'
         let token = jwt.sign(
             { user: req.user.uuid },
             'theSecretIsHere',
@@ -80,17 +79,8 @@ app.post('/log-in', passport.authenticate('local', { session: false }), (req, re
         )
         return res.status(200).send({ status: true, token, message: 'You are inside!' })
     } catch (error) {
-        console.log('💥 error', error)
-        return res.status(401).send({ status: false, message: 'Wrong data' })
+        return res.status(500).send({ status: false, message: 'WTF?', error })
     }
-    // const { phone, password } = req.body
-    // if (!phone || !password)
-    //     return res.status(400).send({ status: false })
-    // else if (phone == '9511967667' && password == 'OnePasswordForExample')
-    //     return res.status(200).send({ status: true, jwt: { validity: '', token: 'The.powerfull.token.is.here' } })
-    // else
-    //     return res.status(401).send({ status: false })
-
 })
 
 app.get('/validate', async (req, res) => {

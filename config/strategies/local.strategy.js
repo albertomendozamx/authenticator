@@ -3,9 +3,6 @@ import * as PassportLocal from 'passport-local'
 import { Accounts } from '../../api/models/Accounts.js'
 import bcrypt from 'bcrypt'
 
-passport.serializeUser((user, done) => done(null, user))
-passport.deserializeUser((user, done) => done(null, user))
-
 passport.use(new PassportLocal.Strategy({
     usernameField: 'phone',
     passwordField: 'password'
@@ -15,7 +12,7 @@ passport.use(new PassportLocal.Strategy({
         if (userFound == null) return done(null, false)
         userFound = userFound.toJSON()
         let isValid = await bcrypt.compare(password, userFound.password)
-        if (!isValid) return done(null, false)
+        if (!isValid) return done(null, false, { status: false, message: 'Unauthorized' })
         done(null, userFound)
     } catch (error) {
         done(error)

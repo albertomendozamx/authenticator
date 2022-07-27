@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "export NODE_OPTIONS=--experimental-vm-modules && jest --coverage --forceExit --colors",
+    "test": "export NODE_OPTIONS=--experimental-vm-modules && jest --coverage --forceExit",
     "test:windows": "set NODE_OPTIONS=--experimental-vm-modules && jest --coverage --forceExit"
   },
   "author": "Alberto Mendoza",
