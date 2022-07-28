@@ -9,6 +9,14 @@ import '../../config/strategies/local.strategy.js'
 
 const app = express()
 
+/**
+ * Middleware to evaluate the JWT
+ * 
+ * @param {object} req - The Authorization header
+ * @param {object} res - The response body
+ * @param {function} next - The callback 
+ * @returns An HTTP response with status code or the callback function
+ */
 var tokenVerify = (req, res, next) => {
     const token = req.headers.authorization || false
     if (!token) return res.status(401).send({ status: false, error: 'tokenExpected' })
