@@ -147,7 +147,7 @@ describe('Account', () => {
       const response = await request(app).post('/update-account')
         .set({ Authorization: jwt })
         .send({
-          name: 'Alberto'
+          name: 'Neri Alberto'
         })
       expect(response.statusCode).toBe(200)
     })

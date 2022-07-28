@@ -77,11 +77,16 @@ app.put('/sign-up', async (req, res) => {
     return res.status(201).send({ status: true })
 })
 
-app.post('/update-account', tokenVerify, (req, res) => {
-    console.log('🔥 req.user', req.user)
-    const body = Object.keys(req.body).length
+app.post('/update-account', tokenVerify, async (req, res) => {
+    const body = (Object.keys(req.body).length) ? req.body : false
     if (!body) return res.status(400).send({ status: false, message: 'No data for update' })
-    else return res.status(200).send({ status: true, message: 'Updated successfully' })
+    try {
+        let updated = await Accounts.update(body, { where: { uuid: req.user.uuid } })
+        if (!updated[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
+        return res.status(200).send({ status: true, message: 'Updated successfully' })
+    } catch (error) {
+        return res.status(400).send({ status: false, error: error.name })
+    }
 })
 
 app.post('/log-in', passport.authenticate('local', { session: false }), (req, res) => {
