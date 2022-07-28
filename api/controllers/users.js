@@ -47,7 +47,6 @@ app.post('/sign-up', async (req, res) => {
             phone,
             password: hashPassword,
             salt,
-            nip: '1234',
             verifiedtoken
         })
         newAccount = newAccount.toJSON()
@@ -118,8 +117,15 @@ app.get('/validate', async (req, res) => {
 })
 
 app.delete('/delete-my-account', tokenVerify, async (req, res) => {
+    let foundAccount = await Accounts.findOne({ where: { uuid: req.user.uuid } })
+    let account = {
+        active: false,
+        deleted: true,
+        email: await bcrypt.hash(foundAccount.email, foundAccount.salt),
+        phone: await bcrypt.hash(foundAccount.phone, foundAccount.salt)
+    }
     try {
-        let deleted = await Accounts.update({ active: false }, { where: { uuid: req.user.uuid } })
+        let deleted = await Accounts.update(account, { where: { uuid: req.user.uuid } })
         if (!deleted[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
         return res.status(200).send({ status: true, message: 'Deleted successfully' })
     } catch (error) {
