@@ -108,12 +108,15 @@ app.delete('/delete-my-account', (req, res) => {
 })
 
 app.get('/verify', (req, res) => {
-    const jwt = req.headers.authorization || false
-    if (!jwt) return res.status(400).send({ status: false })
-    else if (jwt == 'the.powerfull.token.is.here')
-        return res.status(200).send({ status: true })
-    else
-        return res.status(401).send({ status: false })
+    const token = req.headers.authorization || false
+    if (!token) return res.status(400).send({ status: false })
+    var decode
+    try {
+        decode = jwt.verify(token, 'theSecretIsHere')
+        if (decode) return res.status(200).send({ status: true })
+    } catch (error) {
+        res.status(401).send({ status: false, error: message })
+    }
 })
 
 export default app

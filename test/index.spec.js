@@ -151,7 +151,7 @@ describe('Account', () => {
     test('Validate account with another code should respond with a 400 status code', async () => {
       const response = await request(app).get('/validate')
         .query({
-          code: 'a-string-wit-valid-code-for-activation2'
+          code: 'a-string-with-valid-code-for-activation2'
         })
       expect(response.statusCode).toBe(400)
     })
@@ -213,8 +213,14 @@ describe('Login', () => {
 describe('Verify JWT', () => {
 
   test('Request with jwt on header should return a 200 status code', async () => {
+    const login = await request(app).post('/log-in')
+      .send({
+        phone: '9511967667',
+        password: 'OnePasswordForExample'
+      })
+    let jwt = login._body.token
     const response = await request(app).get('/verify')
-      .set({ Authorization: 'the.powerfull.token.is.here' })
+      .set({ Authorization: jwt })
     expect(response.statusCode).toBe(200)
   })
 
