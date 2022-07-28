@@ -9,6 +9,21 @@ import '../../config/strategies/local.strategy.js'
 
 const app = express()
 
+var tokenVerify = (req, res, next) => {
+    const token = req.headers.authorization || false
+    if (!token) return res.status(401).send({ status: false, error: 'tokenExpected' })
+    var decode
+    try {
+        decode = jwt.verify(token, 'theSecretIsHere')
+        req.user = {
+            uuid: decode.user
+        }
+        next()
+    } catch (error) {
+        return res.status(401).send({ status: false, error: message })
+    }
+}
+
 app.use(passport.initialize())
 app.use(express.json())
 
@@ -62,9 +77,8 @@ app.put('/sign-up', async (req, res) => {
     return res.status(201).send({ status: true })
 })
 
-app.post('/update-account', (req, res) => {
-    const jwt = req.headers.authorization || false
-    if (!jwt) return res.status(401).send({ status: false, message: 'Unauthorized' })
+app.post('/update-account', tokenVerify, (req, res) => {
+    console.log('🔥 req.user', req.user)
     const body = Object.keys(req.body).length
     if (!body) return res.status(400).send({ status: false, message: 'No data for update' })
     else return res.status(200).send({ status: true, message: 'Updated successfully' })

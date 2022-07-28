@@ -103,33 +103,6 @@ describe('Account', () => {
 
   })
 
-  describe('Update', () => {
-
-    test('Update user data should respond with a 200 status code', async () => {
-      const response = await request(app).post('/update-account')
-        .set({ Authorization: 'the.powerfull.token.is.here' })
-        .send({
-          name: 'Alberto'
-        })
-      expect(response.statusCode).toBe(200)
-    })
-
-    test('Update user data should respond with a 400 status code', async () => {
-      const response = await request(app).post('/update-account')
-        .set({ Authorization: 'the.powerfull.token.is.here' })
-      expect(response.statusCode).toBe(400)
-    })
-
-    test('Update user data should respond with a 401 status code', async () => {
-      const response = await request(app).post('/update-account')
-        .send({
-          name: 'Alberto'
-        })
-      expect(response.statusCode).toBe(401)
-    })
-
-  })
-
   describe('Validation', () => {
     test('Validate account should respond with a 200 status code', async () => {
       const user = await request(app).post('/sign-up')
@@ -160,6 +133,39 @@ describe('Account', () => {
       const response = await request(app).get('/validate')
       expect(response.statusCode).toBe(400)
     })
+  })
+
+  describe('Update', () => {
+
+    test('Update user data should respond with a 200 status code', async () => {
+      const login = await request(app).post('/log-in')
+        .send({
+          phone: '9511967667',
+          password: 'OnePasswordForExample'
+        })
+      let jwt = login._body.token
+      const response = await request(app).post('/update-account')
+        .set({ Authorization: jwt })
+        .send({
+          name: 'Alberto'
+        })
+      expect(response.statusCode).toBe(200)
+    })
+
+    test('Update user data should respond with a 401 status code', async () => {
+      const response = await request(app).post('/update-account')
+        .set({ Authorization: 'the.powerfull.token.is.here' })
+      expect(response.statusCode).toBe(401)
+    })
+
+    test('Update user data should respond with a 401 status code', async () => {
+      const response = await request(app).post('/update-account')
+        .send({
+          name: 'Alberto'
+        })
+      expect(response.statusCode).toBe(401)
+    })
+
   })
 
   describe('Delete', () => {
