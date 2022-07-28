@@ -168,25 +168,6 @@ describe('Account', () => {
 
   })
 
-  describe('Delete', () => {
-    test('Delete account should return 200 status code', async () => {
-      const response = await request(app).delete('/delete-my-account')
-        .set({ Authorization: 'the.powerfull.token.is.here' })
-      expect(response.statusCode).toBe(200)
-    })
-
-    test('Delete account with expired jwt should return 401 status code', async () => {
-      const response = await request(app).delete('/delete-my-account')
-        .set({ Authorization: 'the.powerfull.token.expired.is.here' })
-      expect(response.statusCode).toBe(401)
-    })
-
-    test('Delete account without jwt should return 401 status code', async () => {
-      const response = await request(app).delete('/delete-my-account')
-      expect(response.statusCode).toBe(401)
-    })
-  })
-
 })
 
 describe('Login', () => {
@@ -241,4 +222,29 @@ describe('Verify JWT', () => {
     expect(response.statusCode).toBe(401)
   })
 
+})
+
+describe('Delete', () => {
+  test('Delete account should return 200 status code', async () => {
+    const login = await request(app).post('/log-in')
+      .send({
+        phone: '9511967667',
+        password: 'OnePasswordForExample'
+      })
+    let jwt = login._body.token
+    const response = await request(app).delete('/delete-my-account')
+      .set({ Authorization: jwt })
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('Delete account with expired jwt should return 401 status code', async () => {
+    const response = await request(app).delete('/delete-my-account')
+      .set({ Authorization: 'the.powerfull.token.expired.is.here' })
+    expect(response.statusCode).toBe(401)
+  })
+
+  test('Delete account without jwt should return 401 status code', async () => {
+    const response = await request(app).delete('/delete-my-account')
+    expect(response.statusCode).toBe(401)
+  })
 })

@@ -117,13 +117,14 @@ app.get('/validate', async (req, res) => {
     }
 })
 
-app.delete('/delete-my-account', (req, res) => {
-    const jwt = req.headers.authorization || false
-    if (!jwt) return res.status(401).send({ status: false })
-    else if (jwt == 'the.powerfull.token.is.here')
-        return res.status(200).send({ status: true })
-    else
-        return res.status(401).send({ status: false })
+app.delete('/delete-my-account', tokenVerify, async (req, res) => {
+    try {
+        let deleted = await Accounts.update({ active: false }, { where: { uuid: req.user.uuid } })
+        if (!deleted[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
+        return res.status(200).send({ status: true, message: 'Deleted successfully' })
+    } catch (error) {
+        return res.status(400).send({ status: false, error: error.name })
+    }
 })
 
 app.get('/verify', (req, res) => {
