@@ -51,10 +51,10 @@ app.post('/sign-up', async (req, res) => {
         })
         newAccount = newAccount.toJSON()
         newApp = await Apps.create({ user: newAccount.uuid, app })
+        return res.status(201).send({ status: true, data: newAccount })
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-    return res.status(201).send({ status: true, data: newAccount })
 })
 
 app.put('/sign-up', async (req, res) => {
@@ -63,17 +63,16 @@ app.put('/sign-up', async (req, res) => {
         return res.status(400).send({ status: false, error: 'fieldsRequired' })
     var foundAccount
     var foundApp
-    var associated
     try {
         foundAccount = await Accounts.findOne({ where: { email, phone } })
         if (foundAccount == null) return res.status(400).send({ status: false, error: 'accountNotFound' })
         foundApp = await Apps.findOne({ where: { user: foundAccount.uuid, app } })
         if (foundApp) return res.status(400).send({ status: false, error: 'appAlreadyAssociated' })
-        associated = await Apps.create({ user: foundAccount.uuid, app })
+        let associated = await Apps.create({ user: foundAccount.uuid, app })
+        return res.status(201).send({ status: true })
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-    return res.status(201).send({ status: true })
 })
 
 app.post('/update-account', tokenVerify, async (req, res) => {
@@ -81,19 +80,18 @@ app.post('/update-account', tokenVerify, async (req, res) => {
     if (!body) return res.status(400).send({ status: false, message: 'No data for update' })
     try {
         let updated = await Accounts.update(body, { where: { uuid: req.user.uuid } })
-        if (!updated[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
         return res.status(200).send({ status: true, message: 'Updated successfully' })
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
 })
 
-app.post('/log-in', passport.authenticate('local', { session: false }), (req, res) => {
+app.post('/log-in', passport.authenticate('local', { session: false }), async (req, res) => {
     try {
-        let token = jwt.sign(
+        let token = await jwt.sign(
             { user: req.user.uuid },
             'theSecretIsHere',
-            { expiresIn: '1h' }
+            { expiresIn: '120s' }
         )
         return res.status(200).send({ status: true, token, message: 'You are inside!' })
     } catch (error) {
@@ -126,23 +124,14 @@ app.delete('/delete-my-account', tokenVerify, async (req, res) => {
     }
     try {
         let deleted = await Accounts.update(account, { where: { uuid: req.user.uuid } })
-        if (!deleted[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
         return res.status(200).send({ status: true, message: 'Deleted successfully' })
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
 })
 
-app.get('/verify', (req, res) => {
-    const token = req.headers.authorization || false
-    if (!token) return res.status(400).send({ status: false })
-    var decode
-    try {
-        decode = jwt.verify(token, 'theSecretIsHere')
-        if (decode) return res.status(200).send({ status: true })
-    } catch (error) {
-        res.status(401).send({ status: false, error: message })
-    }
+app.get('/verify', tokenVerify, async (req, res) => {
+    return res.status(200).send({ status: true })
 })
 
 export default app

@@ -152,6 +152,18 @@ describe('Account', () => {
       expect(response.statusCode).toBe(200)
     })
 
+    test('Update user data with empty payload should respond with a 400 status code', async () => {
+      const login = await request(app).post('/log-in')
+        .send({
+          phone: '9511967667',
+          password: 'OnePasswordForExample'
+        })
+      let jwt = login._body.token
+      const response = await request(app).post('/update-account')
+        .set({ Authorization: jwt })
+      expect(response.statusCode).toBe(400)
+    })
+
     test('Update user data should respond with a 401 status code', async () => {
       const response = await request(app).post('/update-account')
         .set({ Authorization: 'the.powerfull.token.is.here' })
@@ -211,9 +223,9 @@ describe('Verify JWT', () => {
     expect(response.statusCode).toBe(200)
   })
 
-  test('Request without jwt should return a 400 status code', async () => {
+  test('Request without jwt should return a 401 status code', async () => {
     const response = await request(app).get('/verify')
-    expect(response.statusCode).toBe(400)
+    expect(response.statusCode).toBe(401)
   })
 
   test('Request with wrong jwt on header should return a 401 status code', async () => {
@@ -238,8 +250,9 @@ describe('Delete', () => {
   })
 
   test('Delete account with expired jwt should return 401 status code', async () => {
+    let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNTEzYjhlZTAtYmUwYy00NmExLWFmZGYtNjc4OWU3MjRlYjc0IiwiaWF0IjoxNjU5MDM3MjIyLCJleHAiOjE2NTkwMzczNDJ9.WT9gsHuBC7-gw7yz7MA3k9eIwzMQLme6N5zEybsJNyI'
     const response = await request(app).delete('/delete-my-account')
-      .set({ Authorization: 'the.powerfull.token.expired.is.here' })
+      .set({ Authorization: jwt })
     expect(response.statusCode).toBe(401)
   })
 
