@@ -1,23 +1,29 @@
-import express from 'express'
 import { Accounts } from '../models/Accounts.js'
 import { Apps } from '../models/Accounts_apps.js'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
-import passport from 'passport'
 import '../../config/strategies/local.strategy.js'
-import { tokenVerify } from '../../config/jwt.js'
 
-const app = express()
+/**
+ * Project's root
+ * 
+ * @param {*} req - Object
+ * @param {*} res - Object
+ * @returns A view...
+ */
+export async function home(req, res) {
+    return res.status(200).send("Main view...")
+}
 
-app.use(passport.initialize())
-app.use(express.json())
-
-app.get('/', async (req, res) => {
-    return res.status(200).send("Some view...")
-})
-
-app.post('/sign-up', async (req, res) => {
+/**
+ * Register new account
+ * 
+ * @param {*} req - Payload with user data
+ * @param {*} res - Object
+ * @returns A JSON Object
+ */
+export async function createAccount(req, res) {
     const { name, email, phone, password, app } = req.body
     if (!name || !email || !phone || !password || !app)
         return res.status(400).send({ status: false, error: 'fieldsRequired' })
@@ -41,9 +47,16 @@ app.post('/sign-up', async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-})
+}
 
-app.put('/sign-up', async (req, res) => {
+/**
+ * Associate an account with a new application
+ * 
+ * @param {*} req - Payload with user data
+ * @param {*} res - Object
+ * @returns A JSON Object
+ */
+export async function associateAccount(req, res) {
     const { email, phone, app } = req.body
     if (!email || !phone || !app)
         return res.status(400).send({ status: false, error: 'fieldsRequired' })
@@ -59,9 +72,16 @@ app.put('/sign-up', async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-})
+}
 
-app.put('/account', tokenVerify, async (req, res) => {
+/**
+ * Update user data
+ * 
+ * @param {*} req - Payload with user data
+ * @param {*} res - Object
+ * @returns A JSON Object
+ */
+export async function updateAccount(req, res) {
     const body = (Object.keys(req.body).length) ? req.body : false
     if (!body) return res.status(400).send({ status: false, message: 'No data for update' })
     try {
@@ -70,9 +90,16 @@ app.put('/account', tokenVerify, async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-})
+}
 
-app.post('/log-in', passport.authenticate('local', { session: false }), async (req, res) => {
+/**
+ * Log in
+ * 
+ * @param {*} req - Payload with user's credentials
+ * @param {*} res - Object
+ * @returns A JSON Object with JWT
+ */
+export async function loginAccount(req, res) {
     try {
         let token = await jwt.sign(
             { user: req.user.uuid },
@@ -83,9 +110,16 @@ app.post('/log-in', passport.authenticate('local', { session: false }), async (r
     } catch (error) {
         return res.status(500).send({ status: false, message: 'WTF?', error })
     }
-})
+}
 
-app.get('/validate', async (req, res) => {
+/**
+ * Validate account
+ * 
+ * @param {*} req - Code sent 
+ * @param {*} res - Object
+ * @returns Maybe should return a view, but currently returns a JSON Object
+ */
+export async function validateAccount(req, res) {
     if (!req.query.code) return res.status(400).send("Some view")
     var activatedUser
     try {
@@ -98,9 +132,16 @@ app.get('/validate', async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-})
+}
 
-app.delete('/account', tokenVerify, async (req, res) => {
+/**
+ * Soft delete account
+ * 
+ * @param {*} req - Authorization header with JWT
+ * @param {*} res - Object
+ * @returns A JSON Object
+ */
+export async function deleteAccount(req, res) {
     let foundAccount = await Accounts.findOne({ where: { uuid: req.user.uuid } })
     let account = {
         active: false,
@@ -114,10 +155,15 @@ app.delete('/account', tokenVerify, async (req, res) => {
     } catch (error) {
         return res.status(400).send({ status: false, error: error.name })
     }
-})
+}
 
-app.get('/verify', tokenVerify, async (req, res) => {
+/**
+ * Validate JWt
+ * 
+ * @param {*} req - Authorization header with JWT
+ * @param {*} res - Object
+ * @returns A JSON Object
+ */
+export async function verifyToken(req, res) {
     return res.status(200).send({ status: true })
-})
-
-export default app
+}

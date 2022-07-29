@@ -1,4 +1,5 @@
-import app from "./api/controllers/users.js"
+// import app from "./api/controllers/users.js"
+import app from './config/app.js'
 import { db } from "./config/db.js"
 
 async function main() {
