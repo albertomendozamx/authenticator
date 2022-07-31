@@ -50,6 +50,31 @@ export async function createAccount(req, res) {
 }
 
 /**
+ * View account detail
+ * 
+ * @param {*} req - Authorization header JWT
+ * @param {*} res - Object
+ * @returns A JSON Object with account details
+ */
+export async function getAccount(req, res) {
+    try {
+        let myAccount = await Accounts.findOne({ where: { uuid: req.user.uuid } })
+        if (myAccount == null) return res.status(400).send({ status: false })
+        myAccount = myAccount.toJSON()
+        let data = {
+            name: myAccount.name,
+            lastName: myAccount.lastName,
+            birthday: myAccount.mirthday,
+            email: myAccount.email,
+            phone: myAccount.phone
+        }
+        return res.status(200).send({ sttus: 200, data })
+    } catch (error) {
+        return res.status(400).send({ status: false, error })
+    }
+}
+
+/**
  * Associate an account with a new application
  * 
  * @param {*} req - Payload with user data

@@ -212,6 +212,34 @@ describe('Login', () => {
 
 })
 
+describe('Account details', () => {
+
+  test('Get account details with JWT should respond with a 200 status code', async () => {
+    const login = await request(app).post('/log-in')
+      .send({
+        phone: '9511967667',
+        password: 'OnePasswordForExample'
+      })
+    let jwt = login._body.token
+    const response = await request(app).get('/account')
+      .set({ Authorization: jwt })
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('Get account details with expired JWT should respond with a 401 status code', async () => {
+    let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNTEzYjhlZTAtYmUwYy00NmExLWFmZGYtNjc4OWU3MjRlYjc0IiwiaWF0IjoxNjU5MDM3MjIyLCJleHAiOjE2NTkwMzczNDJ9.WT9gsHuBC7-gw7yz7MA3k9eIwzMQLme6N5zEybsJNyI'
+    const response = await request(app).get('/account')
+      .set({ Authorization: jwt })
+    expect(response.statusCode).toBe(401)
+  })
+
+  test('Get account details without JWT should respond with a 401 status code', async () => {
+    const response = await request(app).get('/account')
+    expect(response.statusCode).toBe(401)
+  })
+
+})
+
 describe('Verify JWT', () => {
 
   test('Request with jwt on header should return a 200 status code', async () => {
