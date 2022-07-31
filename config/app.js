@@ -1,5 +1,6 @@
 import express from 'express'
 import passport from 'passport'
+import 'dotenv/config'
 
 const app = express()
 app.use(passport.initialize())

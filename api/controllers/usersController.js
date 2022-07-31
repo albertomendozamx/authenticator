@@ -128,8 +128,8 @@ export async function loginAccount(req, res) {
     try {
         let token = await jwt.sign(
             { user: req.user.uuid },
-            'theSecretIsHere',
-            { expiresIn: '120s' }
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES }
         )
         return res.status(200).send({ status: true, token, message: 'You are inside!' })
     } catch (error) {

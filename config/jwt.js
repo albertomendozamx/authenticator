@@ -13,7 +13,7 @@ export async function tokenVerify(req, res, next) {
     if (!token) return res.status(401).send({ status: false, error: 'tokenExpected' })
     var decode
     try {
-        decode = jwt.verify(token, 'theSecretIsHere')
+        decode = jwt.verify(token, process.env.JWT_SECRET)
         req.user = {
             uuid: decode.user
         }
