@@ -45,7 +45,7 @@ export async function createAccount(req, res) {
         newApp = await Apps.create({ user: newAccount.uuid, app })
         return res.status(201).send({ status: true, data: newAccount })
     } catch (error) {
-        return res.status(400).send({ status: false, error: error.name })
+        return res.status(400).send({ status: false, error })
     }
 }
 
@@ -70,7 +70,7 @@ export async function associateAccount(req, res) {
         let associated = await Apps.create({ user: foundAccount.uuid, app })
         return res.status(201).send({ status: true })
     } catch (error) {
-        return res.status(400).send({ status: false, error: error.name })
+        return res.status(400).send({ status: false, error })
     }
 }
 
@@ -88,7 +88,7 @@ export async function updateAccount(req, res) {
         let updated = await Accounts.update(body, { where: { uuid: req.user.uuid } })
         return res.status(200).send({ status: true, message: 'Updated successfully' })
     } catch (error) {
-        return res.status(400).send({ status: false, error: error.name })
+        return res.status(400).send({ status: false, error })
     }
 }
 
@@ -108,7 +108,7 @@ export async function loginAccount(req, res) {
         )
         return res.status(200).send({ status: true, token, message: 'You are inside!' })
     } catch (error) {
-        return res.status(500).send({ status: false, message: 'WTF?', error })
+        return res.status(500).send({ status: false, error })
     }
 }
 
@@ -130,7 +130,7 @@ export async function validateAccount(req, res) {
         if (!activatedUser[0]) return res.status(400).send({ status: false, message: 'userNotFound' })
         return res.status(200).send({ status: true, message: 'Validated' })
     } catch (error) {
-        return res.status(400).send({ status: false, error: error.name })
+        return res.status(400).send({ status: false, error })
     }
 }
 
@@ -153,7 +153,7 @@ export async function deleteAccount(req, res) {
         let deleted = await Accounts.update(account, { where: { uuid: req.user.uuid } })
         return res.status(200).send({ status: true, message: 'Deleted successfully' })
     } catch (error) {
-        return res.status(400).send({ status: false, error: error.name })
+        return res.status(400).send({ status: false, error })
     }
 }
 
