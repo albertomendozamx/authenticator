@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "export NODE_OPTIONS=--experimental-vm-modules && jest --coverage --forceExit",
-    "test:windows": "set NODE_OPTIONS=--experimental-vm-modules && jest --coverage --forceExit"
+    "test": "export NODE_OPTIONS=--experimental-vm-modules export ENV=Dev && jest --coverage --forceExit",
+    "test:windows": "set NODE_OPTIONS=--experimental-vm-modules export ENV=Dev && jest --coverage --forceExit"
   },
   "author": "Alberto Mendoza",
   "license": "MIT",
